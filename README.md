@@ -18,7 +18,7 @@ CowsaySVG transforms ASCII art from [neo-cowsay](https://github.com/Code-Hex/Neo
 - **API Integration**: Fallback text source support
 - **Precise Layout Control**: Adjust spacing and dimensions pixel-perfectly
 
-## Query Parameters
+## Options
 
 | Parameter       | Description                                                                   | Default               | Examples                          |
 |-----------------|-------------------------------------------------------------------------------|-----------------------|-----------------------------------|
@@ -31,17 +31,17 @@ CowsaySVG transforms ASCII art from [neo-cowsay](https://github.com/Code-Hex/Neo
 | `charWidth`     | Horizontal character spacing (higher = wider)                                                      | `10`                  | `8`, `15`                         |
 | `lineHeight`    | Vertical line spacing (higher = taller output)                                                           | `20`                  | `16`, `24`                        |
 
+## Deploy to Vercel
+
+Click the button below to instantly deploy this project to Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ScrKiddie/CowsaySVG)
 
 ## Environment
 | Variable  | Description                                                                        | Example Value                     |
 |-----------| ---------------------------------------------------------------------------------- | --------------------------------- |
 | `API_URL` | Fallback URL for text (must return plain text) | `https://api.quotable.io/random` |
 
-## Deploy to Vercel
-
-Click the button below to instantly deploy this project to Vercel:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ScrKiddie/CowsaySVG&env=API_URI)
 
 
 
