@@ -60,6 +60,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	cascadeDirection := query.Get("cascadeDirection")
+	if cascadeDirection == "" {
+		cascadeDirection = "rtl"
+	}
+
 	ballonWidth := 40
 	if bw := query.Get("ballonWidth"); bw != "" {
 		if parsed, err := strconv.Atoi(bw); err == nil && parsed > 0 {
@@ -147,9 +152,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	anim := _utility.AnimationParams{
-		Colors:         colors,
-		TimingFunction: timing,
-		Duration:       duration,
+		Colors:           colors,
+		TimingFunction:   timing,
+		Duration:         duration,
+		CascadeDirection: cascadeDirection,
 	}
 
 	w.Header().Set("Content-Type", "image/svg+xml")

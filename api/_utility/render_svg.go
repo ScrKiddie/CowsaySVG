@@ -16,12 +16,6 @@ type Config struct {
 	FontSize   int
 }
 
-type AnimationParams struct {
-	Colors         []string
-	TimingFunction string
-	Duration       float64
-}
-
 type Renderer struct {
 	canvas *svg.SVG
 	config Config
@@ -63,48 +57,34 @@ func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
 		return
 	}
 
-	escapedInitialFill := escapePercent(params.Colors[0])
+	keyframeRulesJoined := GenerateColorKeyframeRules(params.Colors)
 
 	r.canvas.Def()
-	var keyframeRulesJoined string
-
-	if numColors == 1 {
-		escapedColor := escapePercent(params.Colors[0])
-		keyframeRulesJoined = fmt.Sprintf("0%% { fill: %s; }\n100%% { fill: %s; }", escapedColor, escapedColor)
-	} else {
-		keyframePercentages := r.generateKeyframePercentages(numColors)
-		keyframeRules := make([]string, numColors)
-
-		for i := 0; i < numColors; i++ {
-			percent := keyframePercentages[i]
-			escapedColor := escapePercent(params.Colors[i])
-			keyframeRules[i] = fmt.Sprintf("%d%% { fill: %s; }", percent, escapedColor)
-		}
-		keyframeRulesJoined = strings.Join(keyframeRules, "\n")
+	if keyframeRulesJoined != "" {
+		r.canvas.Style("text/css", fmt.Sprintf(`
+            @keyframes custom_anim {
+                %s
+            }
+            .anim-char { 
+                animation: custom_anim %.2fs %s infinite;
+            }`,
+			keyframeRulesJoined,
+			params.Duration,
+			params.TimingFunction))
 	}
-
-	r.canvas.Style("text/css", fmt.Sprintf(`
-        @keyframes custom_anim {
-            %s
-        }
-        .anim-char { 
-            animation: custom_anim %.2fs %s infinite;
-        }`,
-		keyframeRulesJoined,
-		params.Duration,
-		params.TimingFunction))
 	r.canvas.DefEnd()
+
+	escapedInitialFill := escapePercent(params.Colors[0])
+	numberOfLines := len(lines)
 
 	for lineIdx, line := range lines {
 		y := r.config.LineHeight * (lineIdx + 1)
+		numberOfCharsInLine := len(line)
+
 		for charIdx, char := range line {
 			x := r.config.CharWidth * charIdx
-			var delay float64
-			if len(line) > 1 {
-				delay = -0.5 * params.Duration * (float64(charIdx) / float64(len(line)-1))
-			} else if len(line) == 1 {
-				delay = 0
-			}
+
+			delay := CalculateAnimationDelay(params, lineIdx, charIdx, numberOfLines, numberOfCharsInLine)
 
 			r.canvas.Text(x, y, string(char), fmt.Sprintf(
 				`class="anim-char" fill="%s" font-family="monospace" font-size="%dpx" 
@@ -115,27 +95,6 @@ func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
 			))
 		}
 	}
-}
-
-func (r *Renderer) generateKeyframePercentages(colorCount int) []int {
-	if colorCount <= 1 {
-		if colorCount == 1 {
-			return []int{0, 100}
-		}
-		return []int{}
-	}
-
-	percentages := make([]int, colorCount)
-	step := 100.0 / float64(colorCount-1)
-
-	for i := 0; i < colorCount; i++ {
-		percentages[i] = int(math.Round(float64(i) * step))
-	}
-	if colorCount > 0 {
-		percentages[colorCount-1] = 100
-	}
-
-	return percentages
 }
 
 func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string) {
@@ -165,12 +124,17 @@ func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string)
 				fillColor = colors[0]
 			} else {
 				colorIndex := 0
-				if len(line) > 0 {
-					colorIndex = (charIdx * len(colors)) / len(line)
+				if len(line) > 1 {
+					colorIndex = int(math.Round(float64(charIdx) * float64(len(colors)-1) / float64(len(line)-1)))
+				} else {
+					colorIndex = 0
 				}
 
 				if colorIndex >= len(colors) {
 					colorIndex = len(colors) - 1
+				}
+				if colorIndex < 0 {
+					colorIndex = 0
 				}
 				fillColor = colors[colorIndex]
 			}

@@ -2,7 +2,7 @@
 
 <div align="center">
   <img 
-       src="https://cowsay-svg.vercel.app/?colors=red,orange,yellow,green,blue,indigo,violet&duration=4&randomCow=true" 
+       src="https://cowsay-svg.vercel.app/?colors=red,orange,yellow,green,blue,indigo,violet&duration=4&randomCow=true&cascadeDirection=center-out" 
        style="max-height: 500px; height: auto; width: auto;"
      />
 </div>
@@ -26,6 +26,7 @@ CowsaySVG transforms ASCII art from [cowsay](https://github.com/Code-Hex/Neo-cow
 | `colors`        | Comma-separated colors for gradient (hex/css names)                    | `%23000000` (black)            | `red,blue`, `%2300ff00,%2300cc00`      |
 | `duration`      | Animation duration in seconds (0 = static)                             | `0` (static)                   | `0`, `2.5`                             |
 | `timing`        | CSS animation timing function                                          | `steps(1,end)`                 | `linear`, `ease-in-out`                |
+| `cascadeDirection` | Sets the cascade direction for character color animation (options: orthogonal, diagonal, center-based). | `rtl`                          | `ltr`, `rtl`, `ttb`, `btt`, `diag-tlbr`, `diag-trbl`, `diag-bltr`, `diag-brtl`, `center-out`, `edges-in` |
 | `ballonWidth`   | Max characters per line in bubble                                      | `40`                           | `30`, `80`                             |
 | `charWidth`     | Horizontal character spacing (higher = wider)                          | `10`                           | `8`, `15`                              |
 | `lineHeight`    | Vertical line spacing (higher = taller output)                         | `20`                           | `16`, `24`                             |
