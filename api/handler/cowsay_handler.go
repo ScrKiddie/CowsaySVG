@@ -37,7 +37,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		colors = strings.Split(colorsParam, ",")
 	}
 
-	duration := 1.0
+	duration := 0.0
 	if durStr := query.Get("duration"); durStr != "" {
 		if dur, err := strconv.ParseFloat(durStr, 64); err == nil && dur >= 0 {
 			duration = dur
