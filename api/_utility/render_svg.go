@@ -77,6 +77,13 @@ func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
 	escapedInitialFill := escapePercent(params.Colors[0])
 	numberOfLines := len(lines)
 
+	maxLineLengthGlobal := 0
+	for _, currentLine := range lines {
+		if len(currentLine) > maxLineLengthGlobal {
+			maxLineLengthGlobal = len(currentLine)
+		}
+	}
+
 	for lineIdx, line := range lines {
 		y := r.config.LineHeight * (lineIdx + 1)
 		numberOfCharsInLine := len(line)
@@ -84,7 +91,7 @@ func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
 		for charIdx, char := range line {
 			x := r.config.CharWidth * charIdx
 
-			delay := CalculateAnimationDelay(params, lineIdx, charIdx, numberOfLines, numberOfCharsInLine)
+			delay := CalculateAnimationDelay(params, lineIdx, charIdx, numberOfLines, numberOfCharsInLine, maxLineLengthGlobal)
 
 			r.canvas.Text(x, y, string(char), fmt.Sprintf(
 				`class="anim-char" fill="%s" font-family="monospace" font-size="%dpx" 
@@ -110,13 +117,11 @@ func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string)
 		}
 		return
 	}
-
 	for lineIdx, line := range lines {
 		y := r.config.LineHeight * (lineIdx + 1)
 		if len(line) == 0 {
 			continue
 		}
-
 		for charIdx, char := range line {
 			x := r.config.CharWidth * charIdx
 			var fillColor string
@@ -126,10 +131,7 @@ func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string)
 				colorIndex := 0
 				if len(line) > 1 {
 					colorIndex = int(math.Round(float64(charIdx) * float64(len(colors)-1) / float64(len(line)-1)))
-				} else {
-					colorIndex = 0
 				}
-
 				if colorIndex >= len(colors) {
 					colorIndex = len(colors) - 1
 				}
@@ -138,11 +140,8 @@ func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string)
 				}
 				fillColor = colors[colorIndex]
 			}
-
 			escapedFillColor := escapePercent(fillColor)
-			r.canvas.Text(x, y, string(char),
-				fmt.Sprintf(`fill="%s" font-family="monospace" font-size="%dpx"`,
-					escapedFillColor, r.config.FontSize))
+			r.canvas.Text(x, y, string(char), fmt.Sprintf(`fill="%s" font-family="monospace" font-size="%dpx"`, escapedFillColor, r.config.FontSize))
 		}
 	}
 }
@@ -154,7 +153,6 @@ func (r *Renderer) calculateDimensions(lines []string) (width, height int) {
 			maxLen = len(line)
 		}
 	}
-
 	calculatedHeight := len(lines) * r.config.LineHeight
 	if len(lines) == 0 {
 		return 0, 0
@@ -162,12 +160,10 @@ func (r *Renderer) calculateDimensions(lines []string) (width, height int) {
 	if maxLen == 0 {
 		return 0, calculatedHeight
 	}
-
 	paddingBottom := int(float64(r.config.FontSize) * 0.35)
 	if paddingBottom == 0 && r.config.FontSize > 0 {
 		paddingBottom = 2
 	}
-
 	return maxLen * r.config.CharWidth, calculatedHeight + paddingBottom
 }
 
@@ -175,7 +171,4 @@ func (r *Renderer) Start(width, height int) {
 	r.canvas.Start(width, height)
 	r.canvas.Rect(0, 0, width, height, `fill="none"`)
 }
-
-func (r *Renderer) End() {
-	r.canvas.End()
-}
+func (r *Renderer) End() { r.canvas.End() }

@@ -2,7 +2,7 @@
 
 <div align="center">
   <img 
-       src="https://cowsay-svg.vercel.app/?colors=red,orange,yellow,green,blue,indigo,violet&duration=4&randomCow=true&cascadeDirection=center-out" 
+       src="https://cowsay-svg.vercel.app/?colors=red,orange,yellow,green,cyan,blue,violet&duration=4&randomCow=true" 
        style="max-height: 500px; height: auto; width: auto;"
      />
 </div>

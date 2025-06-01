@@ -20,10 +20,8 @@ func generateKeyframePercentages(colorCount int) []int {
 		}
 		return []int{}
 	}
-
 	percentages := make([]int, colorCount)
 	step := 100.0 / float64(colorCount-1)
-
 	for i := 0; i < colorCount; i++ {
 		percentages[i] = int(math.Round(float64(i) * step))
 	}
@@ -38,7 +36,6 @@ func GenerateColorKeyframeRules(colors []string) string {
 	if numColors == 0 {
 		return ""
 	}
-
 	var keyframeRulesJoined string
 	if numColors == 1 {
 		escapedColor := escapePercent(colors[0])
@@ -56,96 +53,90 @@ func GenerateColorKeyframeRules(colors []string) string {
 	return keyframeRulesJoined
 }
 
-func CalculateAnimationDelay(params AnimationParams, lineIdx, charIdx, numberOfLines, numberOfCharsInLine int) float64 {
-	var delay float64 = 0.0
-
-	if params.Duration <= 0 || numberOfCharsInLine <= 0 {
+func CalculateAnimationDelay(params AnimationParams, lineIdx, charIdx, numberOfLines, numberOfCharsInLine int, maxLineLengthGlobal int) float64 {
+	if params.Duration <= 0 {
 		return 0.0
 	}
 
-	const defaultCascadeSpreadFactor = 0.5
+	delay := 0.0
+	defaultCascadeSpreadFactor := 0.5
+	withinLineStaggerFactor := 0.1
+	centerEdgeStaggerFactor := 0.3
+
+	maxIdxGlobal := float64(maxLineLengthGlobal - 1)
+	if maxIdxGlobal < 0 {
+		maxIdxGlobal = 0
+	}
+
+	normNumLines := float64(numberOfLines - 1)
+	if normNumLines <= 0 {
+		normNumLines = 1
+	}
+
+	normMaxIdxGlobal := maxIdxGlobal
+	if normMaxIdxGlobal <= 0 {
+		normMaxIdxGlobal = 1
+	}
 
 	switch params.CascadeDirection {
 	case "ltr":
-		if numberOfCharsInLine > 1 {
-			delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(charIdx) / float64(numberOfCharsInLine-1))
-		}
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(charIdx) / normMaxIdxGlobal)
 	case "rtl":
-		if numberOfCharsInLine > 1 {
-			delay = -0.5 * params.Duration * (float64(charIdx) / float64(numberOfCharsInLine-1))
-		}
+		delay = (params.Duration * defaultCascadeSpreadFactor) * ((maxIdxGlobal - float64(charIdx)) / normMaxIdxGlobal)
 	case "ttb":
-		lineDelayFactor := 0.0
-		if numberOfLines > 1 {
-			lineDelayFactor = (params.Duration * defaultCascadeSpreadFactor) * (float64(lineIdx) / float64(numberOfLines-1))
-		}
-		charInLineDelayFactor := 0.0
-		if numberOfCharsInLine > 1 {
-			charInLineDelayFactor = (params.Duration * 0.1) * (float64(charIdx) / float64(numberOfCharsInLine-1))
-		}
+		lineDelayFactor := (params.Duration * defaultCascadeSpreadFactor) * (float64(lineIdx) / normNumLines)
+		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / normMaxIdxGlobal)
 		delay = lineDelayFactor + charInLineDelayFactor
 	case "btt":
-		lineDelayFactor := 0.0
-		if numberOfLines > 1 {
-			lineDelayFactor = (params.Duration * defaultCascadeSpreadFactor) * (float64(numberOfLines-1-lineIdx) / float64(numberOfLines-1))
-		}
-		charInLineDelayFactor := 0.0
-		if numberOfCharsInLine > 1 {
-			charInLineDelayFactor = (params.Duration * 0.1) * (float64(charIdx) / float64(numberOfCharsInLine-1))
-		}
+		lineDelayFactor := (params.Duration * defaultCascadeSpreadFactor) * (float64(numberOfLines-1-lineIdx) / normNumLines)
+		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / normMaxIdxGlobal)
 		delay = lineDelayFactor + charInLineDelayFactor
 	case "diag-tlbr":
-		if numberOfLines > 0 && numberOfCharsInLine > 0 {
-			maxSumIdx := float64((numberOfLines - 1) + (numberOfCharsInLine - 1))
-			if maxSumIdx <= 0 {
-				maxSumIdx = 1
-			}
-			currentSumIdx := float64(lineIdx + charIdx)
-			delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSumIdx / maxSumIdx)
+		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		if maxSumForNorm <= 0 {
+			maxSumForNorm = 1
 		}
+		currentSum := float64(lineIdx + charIdx)
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-trbl":
-		if numberOfLines > 0 && numberOfCharsInLine > 0 {
-			maxSumIdx := float64((numberOfLines - 1) + (numberOfCharsInLine - 1))
-			if maxSumIdx <= 0 {
-				maxSumIdx = 1
-			}
-			currentSumIdx := float64(lineIdx + (numberOfCharsInLine - 1 - charIdx))
-			delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSumIdx / maxSumIdx)
+		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		if maxSumForNorm <= 0 {
+			maxSumForNorm = 1
 		}
+		currentSum := float64(lineIdx) + (maxIdxGlobal - float64(charIdx))
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-bltr":
-		if numberOfLines > 0 && numberOfCharsInLine > 0 {
-			maxSumIdx := float64((numberOfLines - 1) + (numberOfCharsInLine - 1))
-			if maxSumIdx <= 0 {
-				maxSumIdx = 1
-			}
-			currentSumIdx := float64((numberOfLines - 1 - lineIdx) + charIdx)
-			delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSumIdx / maxSumIdx)
+		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		if maxSumForNorm <= 0 {
+			maxSumForNorm = 1
 		}
+		currentSum := float64(numberOfLines-1-lineIdx) + float64(charIdx)
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-brtl":
-		if numberOfLines > 0 && numberOfCharsInLine > 0 {
-			maxSumIdx := float64((numberOfLines - 1) + (numberOfCharsInLine - 1))
-			if maxSumIdx <= 0 {
-				maxSumIdx = 1
-			}
-			currentSumIdx := float64((numberOfLines - 1 - lineIdx) + (numberOfCharsInLine - 1 - charIdx))
-			delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSumIdx / maxSumIdx)
+		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		if maxSumForNorm <= 0 {
+			maxSumForNorm = 1
 		}
+		currentSum := float64(numberOfLines-1-lineIdx) + (maxIdxGlobal - float64(charIdx))
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "center-out":
-		if numberOfCharsInLine > 1 {
-			centerPosition := float64(numberOfCharsInLine-1) / 2.0
-			distanceFromCenter := math.Abs(float64(charIdx) - centerPosition)
-			if centerPosition > 0 {
-				delay = (params.Duration * 0.3) * (distanceFromCenter / centerPosition)
-			}
+		centerGlobalGrid := maxIdxGlobal / 2.0
+		if maxIdxGlobal > 0 {
+			distanceFromGlobalCenter := math.Abs(float64(charIdx) - centerGlobalGrid)
+			delay = (params.Duration * centerEdgeStaggerFactor) * (distanceFromGlobalCenter / centerGlobalGrid)
 		}
 	case "edges-in":
-		if numberOfCharsInLine > 1 {
-			centerPosition := float64(numberOfCharsInLine-1) / 2.0
-			distanceFromCenter := math.Abs(float64(charIdx) - centerPosition)
-			if centerPosition > 0 {
-				delay = (params.Duration * 0.3) * ((centerPosition - distanceFromCenter) / centerPosition)
-			}
+		centerGlobalGrid := maxIdxGlobal / 2.0
+		if maxIdxGlobal > 0 {
+			distanceFromGlobalCenter := math.Abs(float64(charIdx) - centerGlobalGrid)
+			delay = (params.Duration * centerEdgeStaggerFactor) * ((centerGlobalGrid - distanceFromGlobalCenter) / centerGlobalGrid)
 		}
+	case "ttb-linesync":
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(lineIdx) / normNumLines)
+	case "btt-linesync":
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(numberOfLines-1-lineIdx) / normNumLines)
+	case "full-sync":
+		delay = 0.0
 	default:
 		if numberOfCharsInLine > 1 {
 			delay = -0.5 * params.Duration * (float64(charIdx) / float64(numberOfCharsInLine-1))
