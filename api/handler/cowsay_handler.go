@@ -35,8 +35,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	var colors []string
 	if colorsParam := query.Get("colors"); colorsParam != "" {
 		colors = strings.Split(colorsParam, ",")
-	} else {
-		colors = []string{"#00ff00", "#00cc00", "#00ff66", "#00cc00", "#00ff00"}
 	}
 
 	duration := 1.0

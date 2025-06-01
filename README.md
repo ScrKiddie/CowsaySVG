@@ -24,7 +24,7 @@ CowsaySVG transforms ASCII art from [neo-cowsay](https://github.com/Code-Hex/Neo
 |-----------------|-------------------------------------------------------------------------------|-----------------------|-----------------------------------|
 | `text`          | Custom message                                                  |                       | `Hello%20World`                     |
 | `cow`           | Cowsay character from [neo-cowsay](https://github.com/Code-Hex/Neo-cowsay)   | `default`             | `tux`, `dragon`                   |
-| `colors`        | Comma-separated colors for gradient (hex/css names)                   | `%2300ff00`,`%2300cc00`,<br/>`%2300ff66`,`%2300cc00`,<br/>`%2300ff00` | `red,blue`, `%2300ff00,%2300cc00` |
+| `colors`        | Comma-separated colors for gradient (hex/css names)                   | `%23000000` | `red,blue`, `%2300ff00,%2300cc00` |
 | `duration`      | Animation duration in seconds (0 = static)                                   | `1.0`                 | `0` (static), `2.5`               |
 | `timing`        | CSS animation timing function                                                | `steps(1,end)`        | `linear`, `ease-in-out`           |
 | `ballonWidth`   | Max characters per line                                                    | `40`                  | `30`, `80`                        |
