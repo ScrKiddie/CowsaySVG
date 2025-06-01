@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"strings"
+	"unicode"
 
 	"github.com/ajstarks/svgo"
 )
@@ -38,7 +39,13 @@ func escapePercent(colorStr string) string {
 }
 
 func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
-	lines := strings.Split(text, "\n")
+	rawLines := strings.Split(text, "\n")
+
+	lines := make([]string, len(rawLines))
+	for i, line := range rawLines {
+		lines[i] = strings.TrimRightFunc(line, unicode.IsSpace)
+	}
+
 	width, height := r.calculateDimensions(lines)
 
 	r.Start(width, height)
@@ -95,6 +102,8 @@ func (r *Renderer) Render(text string, params AnimationParams, isStatic bool) {
 			var delay float64
 			if len(line) > 1 {
 				delay = -0.5 * params.Duration * (float64(charIdx) / float64(len(line)-1))
+			} else if len(line) == 1 {
+				delay = 0
 			}
 
 			r.canvas.Text(x, y, string(char), fmt.Sprintf(
@@ -122,7 +131,9 @@ func (r *Renderer) generateKeyframePercentages(colorCount int) []int {
 	for i := 0; i < colorCount; i++ {
 		percentages[i] = int(math.Round(float64(i) * step))
 	}
-	percentages[colorCount-1] = 100
+	if colorCount > 0 {
+		percentages[colorCount-1] = 100
+	}
 
 	return percentages
 }
@@ -153,7 +164,11 @@ func (r *Renderer) renderStaticTextWithGradient(lines []string, colors []string)
 			if len(colors) == 1 {
 				fillColor = colors[0]
 			} else {
-				colorIndex := (charIdx * len(colors)) / len(line)
+				colorIndex := 0
+				if len(line) > 0 {
+					colorIndex = (charIdx * len(colors)) / len(line)
+				}
+
 				if colorIndex >= len(colors) {
 					colorIndex = len(colors) - 1
 				}
@@ -178,7 +193,10 @@ func (r *Renderer) calculateDimensions(lines []string) (width, height int) {
 
 	calculatedHeight := len(lines) * r.config.LineHeight
 	if len(lines) == 0 {
-		return maxLen * r.config.CharWidth, 0
+		return 0, 0
+	}
+	if maxLen == 0 {
+		return 0, calculatedHeight
 	}
 
 	paddingBottom := int(float64(r.config.FontSize) * 0.35)
