@@ -175,7 +175,18 @@ func (r *Renderer) calculateDimensions(lines []string) (width, height int) {
 			maxLen = len(line)
 		}
 	}
-	return maxLen * r.config.CharWidth, len(lines) * r.config.LineHeight
+
+	calculatedHeight := len(lines) * r.config.LineHeight
+	if len(lines) == 0 {
+		return maxLen * r.config.CharWidth, 0
+	}
+
+	paddingBottom := int(float64(r.config.FontSize) * 0.35)
+	if paddingBottom == 0 && r.config.FontSize > 0 {
+		paddingBottom = 2
+	}
+
+	return maxLen * r.config.CharWidth, calculatedHeight + paddingBottom
 }
 
 func (r *Renderer) Start(width, height int) {
