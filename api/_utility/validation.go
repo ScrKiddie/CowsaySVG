@@ -2,6 +2,7 @@ package _utility
 
 import (
 	"fmt"
+	cowsay "github.com/Code-Hex/Neo-cowsay/v2"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -55,4 +56,17 @@ func IsValidAndSafeCSSTimingFunction(userInput string) (string, bool) {
 
 	slog.Warn("unsupported or potentially unsafe timing function value", "input", userInput)
 	return "", false
+}
+
+func IsValidCowName(name string) bool {
+	if name == "default" {
+		return true
+	}
+	availableCows := cowsay.CowsInBinary()
+	for _, validName := range availableCows {
+		if name == validName {
+			return true
+		}
+	}
+	return false
 }
