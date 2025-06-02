@@ -10,10 +10,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
+
 	text := query.Get("text")
 
 	if text == "" {
@@ -25,6 +27,20 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			text = body
+		}
+	}
+
+	maxTextLengthStr := os.Getenv("MAX_TEXT_LENGTH")
+	if maxTextLengthStr != "" {
+		maxTextLength, err := strconv.Atoi(maxTextLengthStr)
+		if err == nil && maxTextLength > 0 {
+			if utf8.RuneCountInString(text) > maxTextLength {
+				runes := []rune(text)
+				text = string(runes[:maxTextLength])
+				slog.Info("text truncated due to MAX_TEXT_LENGTH", "original", utf8.RuneCountInString(string(runes)), "max", maxTextLength, "truncated", utf8.RuneCountInString(text))
+			}
+		} else if err != nil {
+			slog.Warn("invalid MAX_TEXT_LENGTH environment variable value", "value", maxTextLengthStr, "error", err)
 		}
 	}
 

@@ -47,5 +47,6 @@ Click the button below to instantly deploy this project to Vercel:
 | Variable  | Description                                                                        | Example Value                     |
 |-----------| ---------------------------------------------------------------------------------- | --------------------------------- |
 | `API_URL` | Fallback URL for text (must return plain text) | `https://api.quotable.io/random` |
+| `MAX_TEXT_LENGTH` | Max characters for input text (query/API). Truncated if exceeded. Unlimited if not set | `150` |
 
 
