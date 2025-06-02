@@ -68,9 +68,21 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	numColors := len(colors)
-	timing := query.Get("timing")
-	if timing != "" {
-		timing = html.EscapeString(timing)
+	timingInput := query.Get("timing")
+	var timing string
+
+	if timingInput != "" {
+		safeTiming, isValid := _utility.IsValidAndSafeCSSTimingFunction(timingInput)
+		if isValid {
+			timing = safeTiming
+		} else {
+			slog.Warn("user provided invalid timing function, using default", "input_timing", timingInput)
+			if numColors > 0 {
+				timing = fmt.Sprintf("steps(%d, end)", numColors)
+			} else {
+				timing = "steps(1, end)"
+			}
+		}
 	} else {
 		if numColors > 0 {
 			timing = fmt.Sprintf("steps(%d, end)", numColors)
