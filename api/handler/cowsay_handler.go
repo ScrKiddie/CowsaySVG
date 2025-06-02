@@ -4,6 +4,7 @@ import (
 	"cowsaysvg/api/_utility"
 	"fmt"
 	cowsay "github.com/Code-Hex/Neo-cowsay/v2"
+	"html"
 	"log/slog"
 	"net/http"
 	"os"
@@ -40,7 +41,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	var colors []string
 	if colorsParam := query.Get("colors"); colorsParam != "" {
-		colors = strings.Split(colorsParam, ",")
+		colors = strings.Split(html.EscapeString(colorsParam), ",")
 	}
 
 	duration := 0.0
@@ -52,7 +53,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	numColors := len(colors)
 	timing := query.Get("timing")
-	if timing == "" {
+	if timing != "" {
+		timing = html.EscapeString(timing)
+	} else {
 		if numColors > 0 {
 			timing = fmt.Sprintf("steps(%d, end)", numColors)
 		} else {
