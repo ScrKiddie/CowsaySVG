@@ -63,9 +63,9 @@ func CalculateAnimationDelay(params AnimationParams, lineIdx, charIdx, numberOfL
 	withinLineStaggerFactor := 0.1
 	centerEdgeStaggerFactor := 0.3
 
-	maxIdxGlobal := float64(maxLineLengthGlobal - 1)
-	if maxIdxGlobal < 0 {
-		maxIdxGlobal = 0
+	normMaxLineLen := float64(maxLineLengthGlobal - 1)
+	if normMaxLineLen < 0 {
+		normMaxLineLen = 0
 	}
 
 	normNumLines := float64(numberOfLines - 1)
@@ -73,61 +73,61 @@ func CalculateAnimationDelay(params AnimationParams, lineIdx, charIdx, numberOfL
 		normNumLines = 1
 	}
 
-	normMaxIdxGlobal := maxIdxGlobal
-	if normMaxIdxGlobal <= 0 {
-		normMaxIdxGlobal = 1
+	effectiveNormMaxLineLen := normMaxLineLen
+	if effectiveNormMaxLineLen <= 0 {
+		effectiveNormMaxLineLen = 1
 	}
 
 	switch params.CascadeDirection {
 	case "ltr":
-		delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(charIdx) / normMaxIdxGlobal)
+		delay = (params.Duration * defaultCascadeSpreadFactor) * (float64(charIdx) / effectiveNormMaxLineLen)
 	case "rtl":
-		delay = (params.Duration * defaultCascadeSpreadFactor) * ((maxIdxGlobal - float64(charIdx)) / normMaxIdxGlobal)
+		delay = (params.Duration * defaultCascadeSpreadFactor) * ((normMaxLineLen - float64(charIdx)) / effectiveNormMaxLineLen)
 	case "ttb":
 		lineDelayFactor := (params.Duration * defaultCascadeSpreadFactor) * (float64(lineIdx) / normNumLines)
-		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / normMaxIdxGlobal)
+		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / effectiveNormMaxLineLen)
 		delay = lineDelayFactor + charInLineDelayFactor
 	case "btt":
 		lineDelayFactor := (params.Duration * defaultCascadeSpreadFactor) * (float64(numberOfLines-1-lineIdx) / normNumLines)
-		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / normMaxIdxGlobal)
+		charInLineDelayFactor := (params.Duration * withinLineStaggerFactor) * (float64(charIdx) / effectiveNormMaxLineLen)
 		delay = lineDelayFactor + charInLineDelayFactor
 	case "diag-tlbr":
-		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		maxSumForNorm := float64(numberOfLines-1) + normMaxLineLen
 		if maxSumForNorm <= 0 {
 			maxSumForNorm = 1
 		}
 		currentSum := float64(lineIdx + charIdx)
 		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-trbl":
-		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		maxSumForNorm := float64(numberOfLines-1) + normMaxLineLen
 		if maxSumForNorm <= 0 {
 			maxSumForNorm = 1
 		}
-		currentSum := float64(lineIdx) + (maxIdxGlobal - float64(charIdx))
+		currentSum := float64(lineIdx) + (normMaxLineLen - float64(charIdx))
 		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-bltr":
-		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		maxSumForNorm := float64(numberOfLines-1) + normMaxLineLen
 		if maxSumForNorm <= 0 {
 			maxSumForNorm = 1
 		}
 		currentSum := float64(numberOfLines-1-lineIdx) + float64(charIdx)
 		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "diag-brtl":
-		maxSumForNorm := float64(numberOfLines-1) + maxIdxGlobal
+		maxSumForNorm := float64(numberOfLines-1) + normMaxLineLen
 		if maxSumForNorm <= 0 {
 			maxSumForNorm = 1
 		}
-		currentSum := float64(numberOfLines-1-lineIdx) + (maxIdxGlobal - float64(charIdx))
+		currentSum := float64(numberOfLines-1-lineIdx) + (normMaxLineLen - float64(charIdx))
 		delay = (params.Duration * defaultCascadeSpreadFactor) * (currentSum / maxSumForNorm)
 	case "center-out":
-		centerGlobalGrid := maxIdxGlobal / 2.0
-		if maxIdxGlobal > 0 {
+		centerGlobalGrid := normMaxLineLen / 2.0
+		if normMaxLineLen > 0 {
 			distanceFromGlobalCenter := math.Abs(float64(charIdx) - centerGlobalGrid)
 			delay = (params.Duration * centerEdgeStaggerFactor) * (distanceFromGlobalCenter / centerGlobalGrid)
 		}
 	case "edges-in":
-		centerGlobalGrid := maxIdxGlobal / 2.0
-		if maxIdxGlobal > 0 {
+		centerGlobalGrid := normMaxLineLen / 2.0
+		if normMaxLineLen > 0 {
 			distanceFromGlobalCenter := math.Abs(float64(charIdx) - centerGlobalGrid)
 			delay = (params.Duration * centerEdgeStaggerFactor) * ((centerGlobalGrid - distanceFromGlobalCenter) / centerGlobalGrid)
 		}
@@ -140,6 +140,8 @@ func CalculateAnimationDelay(params AnimationParams, lineIdx, charIdx, numberOfL
 	default:
 		if numberOfCharsInLine > 1 {
 			delay = -0.5 * params.Duration * (float64(charIdx) / float64(numberOfCharsInLine-1))
+		} else {
+			delay = 0.0
 		}
 	}
 	return delay
