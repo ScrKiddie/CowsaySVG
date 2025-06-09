@@ -8,34 +8,34 @@
 </div>
 <br/>
 
-CowsaySVG transforms ASCII art from [cowsay](https://github.com/Code-Hex/Neo-cowsay) into colorful, scalable vector graphics with optional animations. Perfect for websites, READMEs, and dashboards.
+CowsaySVG transforms ASCII art from cowsay through [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay) into colorful, scalable vector graphics with optional animations. Perfect for websites, READMEs, and dashboards.
 ## Features
 
 - **Dynamic Color Control**: Specify any number of colors for gradients
 - **Smooth Animations**: Fully customizable timing and duration
-- **40+ Cowsay Characters**: All characters from [cowsay](https://github.com/Code-Hex/Neo-cowsay) supported
+- **40+ Cowsay Characters**: All characters from [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay) supported
 - **API Integration**: Fallback text source support
 - **Precise Layout Control**: Adjust spacing and dimensions pixel-perfectly
 
 ## Options
 
-| Parameter       | Description                                                            | Default                        | Examples                               |
-|-----------------|------------------------------------------------------------------------|--------------------------------|----------------------------------------|
-| `text`          | Custom message                                                         | _(empty, uses API_URL if set)_ | `Hello%20World`                          |
-| `cow`           | Cowsay character from [cowsay](https://github.com/Code-Hex/Neo-cowsay) | `default`                      | `tux`, `dragon`                        |
-| `colors`        | Comma-separated colors for gradient (hex/css names)                    | `%23000000` (black)            | `red,blue`, `%2300ff00,%2300cc00`      |
-| `duration`      | Animation duration in seconds (0 = static)                             | `0` (static)                   | `0`, `2.5`                             |
-| `timing`        | CSS animation timing function                                          | `steps(1,end)`                 | `linear`, `ease-in-out`                |
-| `cascadeDirection` | Sets the cascade direction for character color animation (options: orthogonal, diagonal, center-based). | `rtl`                          | `ltr`, `rtl`, `ttb`, `btt`, `diag-tlbr`, `diag-trbl`, `diag-bltr`, `diag-brtl`, `center-out`, `edges-in` |
-| `ballonWidth`   | Max characters per line in bubble                                      | `40`                           | `30`, `80`                             |
-| `charWidth`     | Horizontal character spacing (higher = wider)                          | `10`                           | `8`, `15`                              |
-| `lineHeight`    | Vertical line spacing (higher = taller output)                         | `20`                           | `16`, `24`                             |
-| `eyes`          | Customizes the cow's eyes (max 2 characters)                           | Cow's default                  | `oo`, `^^`, `xx`                       |
-| `tongue`        | Customizes the cow's tongue (max 2 characters)                         | Cow's default                  | `U`, `_`, `vv`                         |
-| `think`         | Displays message as a thought bubble                                   | `false` (speech bubble)        | `true`, `1`                            |
-| `thoughtsChar`  | Custom character for thought bubble trail                              | `\`                            | `*`, `.`                               |
-| `noWrap`        | Disables automatic word wrapping in bubble                             | `false` (wrapping enabled)     | `true`, `1`                            |
-| `randomCow`     | Selects a random cow character and will overrides `cow` parameter      | `false`                        | `true`, `1`                            |
+| Parameter       | Description                                                                                                                                           | Default                        | Examples                               |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------|----------------------------------------|
+| `text`          | Custom message                                                                                                                                        | _(empty, uses API_URL if set)_ | `Hello%20World`                          |
+| `cow`           | Cowsay character from [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay/tree/master/cows), specified by the file name without the `.cow` extension. | `default`                      | `tux`, `dragon`                        |
+| `colors`        | Comma-separated colors for gradient (hex/css names)                                                                                                   | `%23000000` (black)            | `red,blue`, `%2300ff00,%2300cc00`      |
+| `duration`      | Animation duration in seconds (0 = static)                                                                                                            | `0` (static)                   | `0`, `2.5`                             |
+| `timing`        | CSS animation timing function                                                                                                                         | `steps(1,end)`                 | `linear`, `ease-in-out`                |
+| `cascadeDirection` | Sets the cascade direction for character color animation (options: orthogonal, diagonal, center-based).                                               | `rtl`                          | `ltr`, `rtl`, `ttb`, `btt`, `diag-tlbr`, `diag-trbl`, `diag-bltr`, `diag-brtl`, `center-out`, `edges-in` |
+| `ballonWidth`   | Max characters per line in bubble                                                                                                                     | `40`                           | `30`, `80`                             |
+| `charWidth`     | Horizontal character spacing (higher = wider)                                                                                                         | `10`                           | `8`, `15`                              |
+| `lineHeight`    | Vertical line spacing (higher = taller output)                                                                                                        | `20`                           | `16`, `24`                             |
+| `eyes`          | Customizes the cow's eyes (max 2 characters)                                                                                                          | Cow's default                  | `oo`, `^^`, `xx`                       |
+| `tongue`        | Customizes the cow's tongue (max 2 characters)                                                                                                        | Cow's default                  | `U`, `_`, `vv`                         |
+| `think`         | Displays message as a thought bubble                                                                                                                  | `false` (speech bubble)        | `true`, `1`                            |
+| `thoughtsChar`  | Custom character for thought bubble trail                                                                                                             | `\`                            | `*`, `.`                               |
+| `noWrap`        | Disables automatic word wrapping in bubble                                                                                                            | `false` (wrapping enabled)     | `true`, `1`                            |
+| `randomCow`     | Selects a random cow character and will overrides `cow` parameter                                                                                     | `false`                        | `true`, `1`                            |
 
 ## Deploy to Vercel
 
@@ -50,3 +50,11 @@ Click the button below to instantly deploy this project to Vercel:
 | `MAX_TEXT_LENGTH` | Max characters for input text (query/API). Truncated if exceeded. Unlimited if not set | `150` |
 
 
+
+## License
+
+This project is licensed under the **MIT License**.
+
+This project uses [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay), which is licensed under the **Artistic License** or **GNU General Public License (GPL)**.
+
+For more details, please refer to the original [Neo-cowsay documentation](https://github.com/Code-Hex/Neo-cowsay).
