@@ -53,8 +53,6 @@ Click the button below to instantly deploy this project to Vercel:
 
 ## License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the **MIT License** and uses [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay), which is licensed under the **Artistic License** or **GPL**. For more details, see the [Neo-cowsay documentation](https://github.com/Code-Hex/Neo-cowsay).
 
-This project uses [Neo-cowsay](https://github.com/Code-Hex/Neo-cowsay), which is licensed under the **Artistic License** or **GNU General Public License (GPL)**.
 
-For more details, please refer to the original [Neo-cowsay documentation](https://github.com/Code-Hex/Neo-cowsay).
